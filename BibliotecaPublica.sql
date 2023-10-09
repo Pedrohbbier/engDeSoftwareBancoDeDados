@@ -44,7 +44,7 @@ create table membro(
 create table emprestimo(
 	idEmprestimo int not null,
     dataEmprestimo datetime not null default current_timestamp(),
-    dataDevolucao DATETIME AS (DATE_ADD(dataEmprestimo, INTERVAL 7 DAY)), /*Data de devolução após 7 dias*/
+    dataDevolucao datetime default(DATE_ADD(current_timestamp(), INTERVAL 7 DAY)), /*Data de devolução após 7 dias*/
     idMembro int not null,
     foreign key (idMembro) references membro (idMembro) on delete cascade on update cascade,
     idLivro int not null,
@@ -161,4 +161,19 @@ where idLivro not in (select distinct idLivro from emprestimo);
 /*Comando questão 9:*/
 
 update emprestimo
-set dataDevolucao = dataDevolucao - 7;
+set dataDevolucao = current_date();
+
+/*Comando questão 10:*/
+
+update emprestimo
+set dataDevolucao = date_add(dataDevolucao, interval 1 month);
+
+/*Comando questão 11:*/
+
+delete from membro
+where idMembro not in (select distinct idMembro from emprestimo);
+
+/*Comando questão 12:*/
+
+delete from categoria
+where idCategoria not in (select distinct idCategoria from livro);
