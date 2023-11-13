@@ -1,179 +1,181 @@
-/*Comando da questão 1:*/
-create database biblioteca_publica;
-use biblioteca_publica;
+create database bibliotecaPublica;
+use bibliotecaPublica;
 
-
-/*Comando da questão 2:*/
-
-create table categoria(
-	idCategoria int primary key not null,
-    genero varchar (20)
+create table Categoria(
+Id_Categoria int primary key not null,
+genero varchar(50)
 );
 
-create table autor(
-	idAutor int primary key not null,
-    nomeAutor varchar(50) not null
+create table Autor(
+nome_autor varchar (100) not null,
+Id_Autor int primary key not null
 );
 
-create table livro(
-	idLivro int primary key not null,
-	nomeLivro varchar(50) not null,
-    dataPublicacao datetime not null,
-    nroExemplares int not null,
-    idCategoria int not null,
-    foreign key (idCategoria) references categoria (idCategoria) on delete cascade on update cascade,
-    idAutor int not null auto_increment ,
-    foreign key (idAutor) references autor (idAutor) on delete cascade on update cascade
+create table Livro(
+Id_Livro int primary key not null,
+titulo_livro varchar (100) not null,
+publicacao datetime not null,
+exemplares tinyint unsigned,
+Id_Categoria int not null, 
+Id_Autor int not null,
+foreign key (Id_Categoria) references Categoria (id_Categoria),
+foreign key (Id_Autor) references Autor (id_Autor)
 );
 
-create table endereco( /*Tabela do endereço do membro*/
-	idEndereco int primary key not null,
-    rua varchar(30),
-    numero int not null,
-    cep numeric(8) not null
+create table Membro(
+Id_Membro int primary key not null,
+nome_membro varchar (100),
+cpf numeric(11) not null unique
 );
 
-create table membro(
-	idMembro int primary key not null,
-    nomeMembro varchar(50) not null,
-    cpf numeric(11) not null unique,
-	idEndereco int not null,
-    foreign key (idEndereco) references endereco (idEndereco)
+create table endereco(
+id_endereco int primary key not null,
+Id_Membro int not null,
+Bairro varchar (100),
+Rua varchar (100),
+numero_casa int,
+foreign key (Id_Membro) references Membro (Id_Membro)
 );
 
 create table emprestimo(
-	idEmprestimo int not null,
-    dataEmprestimo datetime not null default current_timestamp(),
-    dataDevolucao datetime default(DATE_ADD(current_timestamp(), INTERVAL 7 DAY)), /*Data de devolução após 7 dias*/
-    idMembro int not null,
-    foreign key (idMembro) references membro (idMembro) on delete cascade on update cascade,
-    idLivro int not null,
-    foreign key (idLivro) references livro (idLivro)
+id_emprestimo int primary key not null,
+Id_Livro int not null,
+Id_Membro int not null,
+data_emprestimo datetime not null default current_timestamp(),
+data_devolucao datetime not null,
+foreign key (Id_Livro) references Livro (Id_Livro),
+foreign key (Id_Membro) references Membro (Id_Membro)
 );
 
-/*Comando da questão 3:*/
-
-insert into categoria(idCategoria , genero)
+insert into Categoria 
+(Id_categoria, genero)
 values
-('1' ,'Fantasia'),
-('2' ,'Romance'),
-('3' ,'Terror'),
-('4' ,'Suspense'),
-('5','Drama');
+('1','Fantasia'),
+('2', 'Terror'),
+('3', 'Romance'),
+('4', 'Drama'),
+('5', 'Suspense');
 
-insert into autor ( idAutor ,nomeAutor)
+insert into Autor
+(Id_Autor, nome_autor)
 values
-('1','J.K.Rowling'),
-('2','Jane Austen'),
-('3','Stephen King'),
-('4','C.J.Tudor'),
-('5','Susan Lee');
+('1', 'JRR Tolkien'),
+('2', 'Stephen King'),
+('3', 'Neil Gaiman'),
+('4', 'William Shakespeare'),
+('5', 'Edgar Allan Poe');
 
-insert into livro (idLivro , nomeLivro , dataPublicacao , nroExemplares , idCategoria) 
-values 
-('1' , 'Harry Potter e a pedra filosofal' , '1997-06-26','3' , '1' ) ,
-('2' , 'Orgulho e preconceito' , '1813-01-28' ,'7' ,'2'),
-('3' , 'A dança da morte' , '1978-11-19' ,'5' ,'3'  ),
-('4' , 'O homem de giz' , '2018-01-30' ,'12' ,'4' ),
-('5' , 'Um drama de verão' , '2022-10-25','2' , '5' );
-    
-insert into endereco (idEndereco , rua , numero , cep)
+insert into Livro
+(Id_livro, titulo_livro, publicacao, exemplares, Id_Categoria, Id_Autor)
 values
-('1' , 'Rua Ammir' , '648' , '85240050' ),
-('2' , 'Rua Espaço' , '456' , '42351687' ),
-('3' , 'Rua Dom Pedro','451' , '45239510'),
-('4' , 'Rua Napoleão' ,'951' ,'74138516'),
-('5' , 'Rua Espanha' ,'136', '42357813');
+('1', 'Senhor dos Aneis: A Sociedade do Anel', '1954-07-29','10','1','1'),
+('2', 'O Cemiterio', '1983-11-14', '17', '2', '2'),
+('3', 'Deuses Americanos', '2003-06-19', '30', '3', '3'),
+('4', 'Romeu e Julieta', '1597-10-11', '12', '4','4'),
+('5','Historias Extraordinarias', '1985-05-23','21','5','5');
 
-insert into membro (idMembro, nomeMembro, cpf,idEndereco)
+insert into Membro
+(Id_Membro, nome_membro, cpf)
 values
-('1', 'Pedro','43578139425', '1'),
-('2', 'Gustavo','75315982548', '2'),
-('3', 'Izabela','53476201680', '3'),
-('4', 'James','01201458742', '4'),
-('5', 'Ana','46357801201', '5');
+('1','Andre Carlos','15682468743'),
+('2','Geovana Cardoso','68463754234'),
+('3','Leandro Gomes','85325685423'),
+('4','Rafael Guilherme','15824683578'),
+('5','Leandra Candida','07536864324');
 
-
-insert into emprestimo (idEmprestimo , idMembro , idLivro)
+insert into Endereco
+(id_endereco, Id_Membro, Bairro, Rua, numero_casa)
 values
-('1' , '1' , '1'),
-('2','2' , '1' ),
-('3' , '3' , '3' ),
-('4','4' , '3' ),
-('5' , '5' , '2');
+('1','1','Battel','Avenida Iguaçu','530'),
+('2','2','Ganchinho','Rua Alan Kardek','610'),
+('3','3','Agua Verde','Rua Buenos Aires','310'),
+('4','4','Sitio Cercado','Rua Horizona','80'),
+('5','5','Centro','Rua Brigadeiro Franco','143');
 
+insert into emprestimo
+(id_emprestimo, Id_Livro, Id_Membro, data_emprestimo, data_devolucao)
+values
+('1','1','1','2023-02-13','2023-02-23'),
+('2','2','2','2023-06-17','2023-06-27'),
+('3','3','3','2023-09-16','2023-09-26'),
+('4','4','4','2023-02-10','2023-02-20'),
+('5','5','5','2023-12-12','2023-12-22');
 
-select   /*Apenas testando*/
-    livro.idLivro,
-    livro.nomeLivro,
-    autor.nomeAutor,
-    categoria.genero,
-    membro.nomeMembro,
-    emprestimo.idEmprestimo,
-    emprestimo.dataDevolucao,
-    endereco.cep
-from
-    livro,
-    categoria,
-    autor,
-    membro,
-    emprestimo,
-    endereco
-where
-    livro.idCategoria = categoria.idCategoria
-    and livro.idAutor = autor.idAutor
-    and emprestimo.idLivro = livro.idLivro
-    and emprestimo.idMembro = membro.idMembro
-    and emprestimo.idEmprestimo = membro.idMembro
-    and endereco.idEndereco = membro.idMembro;
-    
-/*Comando da questão 4:*/
+select nome_autor from Autor where nome_autor like 'a%'; 
 
-select autor.nomeAutor
-from autor
-where nomeAutor like 'A%'; /*Não vai aparecer nada, porque não existe um autor que começa com a letra 'A'*/
+select titulo_livro from Livro where titulo_livro like '%sistema%';
 
-/*Comando da questão 5:*/
+select id_Livro, titulo_livro from Livro where publicacao < date_sub(now(), interval 5 year);
 
-select livro.nomeLivro
-from livro
-where nomeLivro like '%sistema%'; /*Não vai aparecer nada, porque não existe um livro com a palavra 'sistema'*/
+select titulo_livro from Livro where exemplares < 5 order by titulo_livro;
 
-/*Comando questão 6:*/
-
-select livro.idLivro, livro.nomeLivro
-from livro
-where dataPublicacao < DATE_SUB(NOW(), interval 5 year);
-
-/*Comando questão 7:*/
-
-select livro.idLivro, livro.nomeLivro, livro.nroExemplares
-from livro
-where nroExemplares < 5
-order by nomeLivro;
-
-/*Comando questão 8:*/
-
-select livro.idLivro, livro.nomeLivro
-from livro
-where idLivro not in (select distinct idLivro from emprestimo);
-
-/*Comando questão 9:*/
+select Id_Livro, titulo_livro from Livro where Id_Livro not in (select distinct Id_Livro from emprestimo);
 
 update emprestimo
-set dataDevolucao = current_date();
-
-/*Comando questão 10:*/
+set data_devolucao = current_date;
 
 update emprestimo
-set dataDevolucao = date_add(dataDevolucao, interval 1 month);
-
-/*Comando questão 11:*/
+set data_devolucao = date_add(data_devolucao, interval 1 month);
 
 delete from membro
-where idMembro not in (select distinct idMembro from emprestimo);
-
-/*Comando questão 12:*/
+where Id_Membro not in (select distinct Id_Membro from emprestimo);
 
 delete from categoria
-where idCategoria not in (select distinct idCategoria from livro);
+where Id_Categoria not in (select distinct Id_Categoria from Livro);
+
+/*Continuando a A2:/
+
+/*1) Listar o título do livro e o nome do autor para todos os livros cadastrados na base*/
+
+select titulo_livro, a.nome_autor from Livro l
+join Autor a on l.id_autor = a.id_autor;
+
+/*2) Listar a data de empréstimo, o nome do membro que emprestou, e o título do livro de todos os empréstimos feitos neste ano.*/
+select e.data_emprestimo, m.nome_membro, l.titulo_livro from emprestimo e
+join Membro m on e.id_membro = m.id_membro
+join Livro l on  e.id_livro = l.id_livro
+where year (e.data_emprestimo) = year(curdate());
+
+/*3) Listar o nome da categoria e o título do livro de todos os livros cadastrados na base.*/
+select c.genero, l.titulo_livro from Livro l
+join Categoria c on l.id_categoria = c.id_categoria;
+
+/*4) Listar o título do livro, a data de empréstimo e a data da devolução real de todos os livros da base.*/
+select l.titulo_livro, e.data_emprestimo, e.data_devolucao from Livro l
+join emprestimo e on l.id_livro = e.id_livro;
+
+/*5) Listar a data de empréstimo, data da devolução real, nome do membro que emprestou, título do livro, nome da categoria e nome do autor (ou autores) de todos os empréstimos realizados*/
+select e.data_emprestimo, e.data_devolucao, m.nome_membro, l.titulo_livro, c.genero, a.nome_autor from emprestimo e
+join Membro m on e.id_membro = m.id_membro
+join Livro l on e.id_livro = l.id_livro
+join categoria c on l.id_livro = c.id_categoria
+left join Autor a on l.Id_Autor = a.Id_Autor
+group by e.id_emprestimo;
+
+/*6) Contar quantos livros estão cadastrados na base.*/
+select count(*) as total_livros from Livro;
+
+/*7) Contar quantos empréstimos foram feitos no ano passado.*/
+select count(*) as emprestimos_ano_passado from emprestimo
+where year(data_emprestimo) = year(curdate()) - 1;
+
+/*8) Listar o nome da categoria e a quantidade de livros por categoria.*/
+select c.genero, count(l.id_livro) as qtd_livros from categoria c
+left join Livro l on c.id_categoria = l.id_categoria
+group by c.id_categoria;
+
+/*9) Listar o título do livro e o nome do membro de todos os livros emprestados na semana corrente, agrupados e ordenados por data de empréstimo*/
+select l.titulo_livro, m.nome_membro from emprestimo e
+join membro m on e.id_membro = m.id_membro
+join Livro l on e.id_livro = l.id_livro
+where yearweek(e.data_emprestimo, 1) = yearweek(curdate(), 1)
+order by e.data_emprestimo;
+
+/*10) Listar o total de livros emprestados no ano atual, agrupados e ordenados cronologicamente por mês, sendo que o nome do mês deve ser apresentado por extenso.*/
+select monthname(e.data_emprestimo) as mes, count(*) as total_de_emprestimos from emprestimo e
+where year(e.data_emprestimo) = year(curdate())
+group by mes
+order by month(e.data_emprestimo);
+
+/*Nome: Pedro Henrique Boldori Bier e Gustavo Cirino*/
+/*Curso: Engenharia de software*/
